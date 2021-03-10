@@ -60,3 +60,92 @@ $.getJSON(url, null, function(json_result) {
 
     }
 );
+
+
+function onFormOpen() {
+    console.log("Opening add item dialog")
+    $("#id").val("")
+    $("#firstName").val("")
+    $("#lastName").val("")
+    $("#email").val("")
+    $("#phoneNumber").val("")
+    $("#birthday").val("")
+
+    $("#myModal").modal("show")
+} $("#addItem").on("click", onFormOpen);
+
+function validateFunction(value, regular) {
+    // Get the field
+    console.log(value)
+}
+
+function validate(field, isValid) {
+    if (isValid) {
+        field.removeClass("is-invalid")
+        field.addClass("is-valid")
+    } else {
+        field.removeClass("is-valid")
+        field.addClass("is-invalid")
+    }
+}
+
+function clear(field) {
+    field.removeClass("is-invalid")
+    field.removeClass("is-valid")
+    field.val("")
+}
+
+function onSaveChanges() {
+    console.log("save changes test!")
+
+    let firstName = $("#firstName")
+    let firstNameValue = firstName.val()
+    let firstNameReg = /^[A-Za-zéüöêå’]{1,45}$/;
+    let firstNameTest = firstNameReg.test(firstNameValue)
+    if (firstNameTest) {console.log("First name good!")} else {console.log("First name bad!")}
+    validate(firstName, firstNameTest)
+
+    let lastName = $("#lastName")
+    let lastNameValue = lastName.val()
+    let lastNameReg = /^[A-Za-zéüöêå']{1,45}$/;
+    let lastNameTest = lastNameReg.test(lastNameValue)
+    if (lastNameTest) {console.log("Last name good!")} else {console.log("Last name bad!")}
+    validate(lastName, lastNameTest)
+
+    let email = $("#email")
+    let emailValue = email.val()
+    let emailReg = /^[A-Za-z0-9_]{1,200}@[A-Za-z]{1,50}.com$/;
+    let emailTest = emailReg.test(emailValue)
+    if (emailTest) {console.log("email good!")} else {console.log("email bad!")}
+    validate(email, emailTest)
+
+    let phone = $("#phone")
+    let phoneValue = phone.val()
+    console.log(phoneValue)
+    let phoneReg = /^[1-9][0-9][0-9]-?[0-9][0-9][0-9]-?[0-9][0-9][0-9][0-9]$/;
+    let phoneTest = phoneReg.test(phoneValue)
+    if (phoneTest) {console.log("phone number good!")} else {console.log("phone number bad!")}
+    validate(phone, phoneTest)
+
+    let birthday = $("#birthday")
+    let birthdayValue = birthday.val()
+    console.log(birthdayValue)
+    let birthdayReg = /^[0-9][0-9][0-9][1-9]-[0-9][1-9]-[0-9][1-9]$/;
+    let birthdayTest = birthdayReg.test(birthdayValue)
+    if (birthdayTest) {console.log("Birthdate good!")} else {console.log("Birthdate bad!")}
+    validate(birthday, birthdayTest)
+}
+$("#saveChanges").on("click", onSaveChanges)
+
+$('#myModal').on("hide", function () {
+
+})
+
+$('#myModal').on('hidden.bs.modal', function(event) {
+    console.log("Clearing data")
+    clear($("#firstName"))
+    clear($("#lastName"))
+    clear($("#email"))
+    clear($("#phone"))
+    clear($("#birthday"))
+})
