@@ -29,4 +29,12 @@ public class Person {
 
     public String getBirthday() { return birthday; }
     public void setBirthday(String birthday) { this.birthday = birthday; }
+
+    public String toString() {
+        return "First name: " + this.getFirst() + "\n" +
+                "Last name: " + this.getLast() + "\n" +
+                "Email: " + this.getEmail() + "\n" +
+                "Phone Number: " + this.getPhone() + "\n" +
+                "Birthday: " + this.getBirthday();
+    }
 }

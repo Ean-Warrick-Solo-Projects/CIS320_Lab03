@@ -35,6 +35,39 @@ function getLocalDateFormatString(sqlDate) {
     return resultDate.toDateString();
 }
 
+function clearAllValues() {
+    console.log("Clearing data")
+    clear($("#firstName"))
+    clear($("#lastName"))
+    clear($("#email"))
+    clear($("#phone"))
+    clear($("#birthday"))
+}
+
+function reloadPage() {
+    $('#datatable').find("tr:not(:nth-child(1))").remove();
+    $.getJSON(url, null, function(json_result) {
+            for (let i = 0; i < json_result.length; i++) {
+
+                // Print the first name
+                let id = json_result[i].id
+                let first = json_result[i].first
+                let last = json_result[i].last
+                let email = json_result[i].email
+                let phone = json_result[i].phone
+                let birthday = json_result[i].birthday
+                console.log(id + first + last)
+
+                $('#datatable thead:last').after('<tr><td>' + id + '</td><td>' + htmlSafe(first) + '</td>' +
+                    '<td>' + htmlSafe(last) + '</td><td>' + htmlSafe(email) + '</td><td>' +
+                    formatPhoneNumber(htmlSafe(phone)) + '</td>' +
+                    '<td>' + getLocalDateFormatString(htmlSafe(birthday)) + '</td></tr>');
+            }
+            console.log("Reloaded");
+        }
+    );
+}
+
 $.getJSON(url, null, function(json_result) {
 
         // json_result is an object. You can set a breakpoint, or print
@@ -61,6 +94,24 @@ $.getJSON(url, null, function(json_result) {
     }
 );
 
+/* Method 6: AJAX Post using JSON data */
+function jqueryPostJSONButtonAction(dataToServer) {
+
+    let url = "api/name_list_edit";
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: JSON.stringify(dataToServer),
+        success: function(dataFromServer) {
+            clearAllValues()
+            reloadPage()
+            $('#myModal').modal('toggle');
+        },
+        contentType: "application/json",
+        dataType: 'text' // Could be JSON or whatever too
+    });
+}
 
 function onFormOpen() {
     console.log("Opening add item dialog")
@@ -98,25 +149,36 @@ function clear(field) {
 function onSaveChanges() {
     console.log("save changes test!")
 
+    let isValid = true
+
     let firstName = $("#firstName")
     let firstNameValue = firstName.val()
     let firstNameReg = /^[A-Za-zéüöêå’]{1,45}$/;
     let firstNameTest = firstNameReg.test(firstNameValue)
-    if (firstNameTest) {console.log("First name good!")} else {console.log("First name bad!")}
+    if (firstNameTest) {console.log("First name good!")} else {
+        console.log("First name bad!")
+        isValid = false
+    }
     validate(firstName, firstNameTest)
 
     let lastName = $("#lastName")
     let lastNameValue = lastName.val()
     let lastNameReg = /^[A-Za-zéüöêå']{1,45}$/;
     let lastNameTest = lastNameReg.test(lastNameValue)
-    if (lastNameTest) {console.log("Last name good!")} else {console.log("Last name bad!")}
+    if (lastNameTest) {console.log("Last name good!")} else {
+        console.log("Last name bad!")
+        isValid = false
+    }
     validate(lastName, lastNameTest)
 
     let email = $("#email")
     let emailValue = email.val()
     let emailReg = /^[A-Za-z0-9_]{1,200}@[A-Za-z]{1,50}.com$/;
     let emailTest = emailReg.test(emailValue)
-    if (emailTest) {console.log("email good!")} else {console.log("email bad!")}
+    if (emailTest) {console.log("email good!")} else {
+        console.log("email bad!")
+        isValid = false
+    }
     validate(email, emailTest)
 
     let phone = $("#phone")
@@ -124,7 +186,10 @@ function onSaveChanges() {
     console.log(phoneValue)
     let phoneReg = /^[1-9][0-9][0-9]-?[0-9][0-9][0-9]-?[0-9][0-9][0-9][0-9]$/;
     let phoneTest = phoneReg.test(phoneValue)
-    if (phoneTest) {console.log("phone number good!")} else {console.log("phone number bad!")}
+    if (phoneTest) {console.log("phone number good!")} else {
+        console.log("phone number bad!")
+        isValid = false
+    }
     validate(phone, phoneTest)
 
     let birthday = $("#birthday")
@@ -132,20 +197,28 @@ function onSaveChanges() {
     console.log(birthdayValue)
     let birthdayReg = /^[0-9][0-9][0-9][1-9]-[0-9][1-9]-[0-9][1-9]$/;
     let birthdayTest = birthdayReg.test(birthdayValue)
-    if (birthdayTest) {console.log("Birthdate good!")} else {console.log("Birthdate bad!")}
+    if (birthdayTest) {console.log("Birthdate good!")} else {
+        console.log("Birthdate bad!")
+        isValid = false
+    }
     validate(birthday, birthdayTest)
+
+    if (isValid) {
+        console.log("Valid form")
+        let jObject = {}
+        jObject.first = firstNameValue
+        jObject.last = lastNameValue
+        jObject.email = emailValue
+        jObject.phone = phoneValue.replace(/\D/g, '');
+        jObject.birthday = birthdayValue
+
+        jqueryPostJSONButtonAction(jObject)
+    }
 }
 $("#saveChanges").on("click", onSaveChanges)
 
-$('#myModal').on("hide", function () {
 
-})
 
 $('#myModal').on('hidden.bs.modal', function(event) {
-    console.log("Clearing data")
-    clear($("#firstName"))
-    clear($("#lastName"))
-    clear($("#email"))
-    clear($("#phone"))
-    clear($("#birthday"))
+    return clearAllValues()
 })
