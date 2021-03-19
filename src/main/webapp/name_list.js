@@ -195,9 +195,11 @@ function onSaveChanges() {
     let birthday = $("#birthday")
     let birthdayValue = birthday.val()
     console.log(birthdayValue)
-    let birthdayReg = /^[0-9][0-9][0-9][1-9]-[0-9][1-9]-[0-9][1-9]$/;
+    let birthdayReg = /^[\d][\d][\d][\d]-[\d][\d]-[\d][\d]$/;
+    let birthdayreg2 = /^[\d][\d][\d][\d]-00-00$/;
     let birthdayTest = birthdayReg.test(birthdayValue)
-    if (birthdayTest) {console.log("Birthdate good!")} else {
+    let birthdayTest2 = birthdayreg2.test(birthdayValue)
+    if (birthdayTest && !birthdayTest2) {console.log("Birthdate good!")} else {
         console.log("Birthdate bad!")
         isValid = false
     }
