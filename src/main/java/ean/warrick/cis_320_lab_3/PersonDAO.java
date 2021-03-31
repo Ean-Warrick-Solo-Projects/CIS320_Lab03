@@ -91,6 +91,52 @@ public class PersonDAO {
         return list;
     }
 
+    public static void removePerson(int id) {
+        log.log(Level.FINE, "Remove person");
+
+        // Create an empty linked list to put the people we get from the
+        // database into.
+
+        // Declare our variables
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        // Databases are unreliable. Use some exception handling
+        try {
+            // Get our database connection
+            conn = DBHelper.getConnection();
+
+            // This is a string that is our SQL query.
+            // Update for all our fields
+            String sql = "select id, first, last, email, phone, birthday from person";
+            String newSql = "delete from person where id = ?";
+            // If you had parameters, it would look something like
+            // String sql = "select id, first, last, phone from person where id = ?";
+
+            // Create an object with all the info about our SQL statement to run.
+            stmt = conn.prepareStatement(newSql);
+            stmt.setInt(1, id);
+            // Execute the SQL
+            stmt.executeUpdate();
+
+        } catch (SQLException se) {
+            log.log(Level.SEVERE, "SQL Error", se );
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error", e );
+        } finally {
+            // Ok, close our result set, statement, and connection
+            try { if (rs != null) rs.close(); }
+            catch (Exception e) { log.log(Level.SEVERE, "Error", e ); }
+
+            try { if(stmt != null) stmt.close(); }
+            catch (Exception e) { log.log(Level.SEVERE, "Error", e ); }
+
+            try { if(conn != null) conn.close(); }
+            catch (Exception e) { log.log(Level.SEVERE, "Error", e ); }
+        }
+    }
+
     public static void addPerson(Person person) {
         log.log(Level.FINE, "Add person");
 

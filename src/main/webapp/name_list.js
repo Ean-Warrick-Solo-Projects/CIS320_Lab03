@@ -61,11 +61,24 @@ function reloadPage() {
                 $('#datatable thead:last').after('<tr><td>' + id + '</td><td>' + htmlSafe(first) + '</td>' +
                     '<td>' + htmlSafe(last) + '</td><td>' + htmlSafe(email) + '</td><td>' +
                     formatPhoneNumber(htmlSafe(phone)) + '</td>' +
-                    '<td>' + getLocalDateFormatString(htmlSafe(birthday)) + '</td></tr>');
+                    '<td>' + getLocalDateFormatString(htmlSafe(birthday)) + '</td>' +
+                    '<td>\n' +
+                    '<button type=\'button\' name=\'delete\' class=\'deleteButton btn btn-danger\' value=' + id + '> ' +
+                    'Delete' +
+                    '</button>' +
+                    '</td></tr>');
             }
+            $(".deleteButton").on("click", deleteItem);
             console.log("Reloaded");
+
         }
     );
+}
+
+function deleteItem(e) {
+    console.log("Delete");
+    console.log(e.target.value);
+    jqueryPostJSONButtonActionDelete(e.target.value);
 }
 
 $.getJSON(url, null, function(json_result) {
@@ -86,9 +99,16 @@ $.getJSON(url, null, function(json_result) {
             $('#datatable tbody:last').after('<tr><td>' + id + '</td><td>' + htmlSafe(first) + '</td>' +
                 '<td>' + htmlSafe(last) + '</td><td>' + htmlSafe(email) + '</td><td>' +
                 formatPhoneNumber(htmlSafe(phone)) + '</td>' +
-                '<td>' + getLocalDateFormatString(htmlSafe(birthday)) + '</td></tr>');
+                '<td>' + getLocalDateFormatString(htmlSafe(birthday)) + '</td>' +
+                '<td>\n' +
+                '<button type=\'button\' name=\'delete\' class=\'deleteButton btn btn-danger\' value=' + id + '> ' +
+                'Delete' +
+                '</button>' +
+                '</td></tr>');
         }
         $('#datatable tbody:first').remove()
+        $(".deleteButton").on("click", deleteItem);
+        console.log("Reloaded");
         console.log("Done");
 
     }
@@ -96,7 +116,6 @@ $.getJSON(url, null, function(json_result) {
 
 /* Method 6: AJAX Post using JSON data */
 function jqueryPostJSONButtonAction(dataToServer) {
-
     let url = "api/name_list_edit";
 
     $.ajax({
@@ -107,6 +126,23 @@ function jqueryPostJSONButtonAction(dataToServer) {
             clearAllValues()
             reloadPage()
             $('#myModal').modal('toggle');
+        },
+        contentType: "application/json",
+        dataType: 'text' // Could be JSON or whatever too
+    });
+}
+
+function jqueryPostJSONButtonActionDelete(id) {
+
+    let url = "api/name_list_delete";
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: id,
+        success: function() {
+            console.log("Reloading after remove")
+            reloadPage()
         },
         contentType: "application/json",
         dataType: 'text' // Could be JSON or whatever too
@@ -173,7 +209,7 @@ function onSaveChanges() {
 
     let email = $("#email")
     let emailValue = email.val()
-    let emailReg = /^[A-Za-z0-9_]{1,200}@[A-Za-z]{1,50}.com$/;
+    let emailReg = /^[A-Za-z0-9_.]{1,200}@[A-Za-z]{1,50}.com$/;
     let emailTest = emailReg.test(emailValue)
     if (emailTest) {console.log("email good!")} else {
         console.log("email bad!")
