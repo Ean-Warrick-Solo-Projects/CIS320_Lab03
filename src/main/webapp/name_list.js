@@ -44,6 +44,40 @@ function clearAllValues() {
     clear($("#birthday"))
 }
 
+function reformatPhoneToBasic(numberString) {
+    let regexp = /\((\d{3})\) (\d{3})-(\d{4})/;
+    let match = numberString.match(regexp)
+    return match[1] + "-" + match[2] + "-" + match[3]
+}
+
+function reformatBirthdayToBasic(birthdayString) {
+    let timestamp = Date.parse(birthdayString);
+    let dateObject = new Date(timestamp);
+    let fullDateString = dateObject.toISOString();
+    return fullDateString.split('T')[0];
+}
+function editItem(e) {
+    console.log("Edit");
+    console.log("Edit: " + e.target.value);
+    let id = e.target.value;
+    let first = e.target.parentNode.parentNode.querySelectorAll("td")[1].innerHTML;
+    let last = e.target.parentNode.parentNode.querySelectorAll("td")[2].innerHTML;
+    let email = e.target.parentNode.parentNode.querySelectorAll("td")[3].innerHTML;
+    let phone = e.target.parentNode.parentNode.querySelectorAll("td")[4].innerHTML;
+    let birthday = e.target.parentNode.parentNode.querySelectorAll("td")[5].innerHTML;
+
+    $('#id').val(id); // Yes, now we set and use the hidden ID field
+    $('#firstName').val(first);
+    $('#lastName').val(last)
+    $("#email").val(email)
+    $("#phone").val(reformatPhoneToBasic(phone))
+    $("#birthday").val(reformatBirthdayToBasic(birthday))
+// Etc
+
+// Show the window
+    $('#myModal').modal('show');
+}
+
 function reloadPage() {
     $('#datatable').find("tr:not(:nth-child(1))").remove();
     $.getJSON(url, null, function(json_result) {
@@ -63,12 +97,14 @@ function reloadPage() {
                     formatPhoneNumber(htmlSafe(phone)) + '</td>' +
                     '<td>' + getLocalDateFormatString(htmlSafe(birthday)) + '</td>' +
                     '<td>\n' +
+                    "<button type='button' name='edit' class='editButton btn btn-primary' value='" + id + "'>edit</button>" +
                     '<button type=\'button\' name=\'delete\' class=\'deleteButton btn btn-danger\' value=' + id + '> ' +
                     'Delete' +
                     '</button>' +
                     '</td></tr>');
             }
             $(".deleteButton").on("click", deleteItem);
+            $(".editButton").on("click", editItem);
             console.log("Reloaded");
 
         }
@@ -101,6 +137,7 @@ $.getJSON(url, null, function(json_result) {
                 formatPhoneNumber(htmlSafe(phone)) + '</td>' +
                 '<td>' + getLocalDateFormatString(htmlSafe(birthday)) + '</td>' +
                 '<td>\n' +
+                "<button type='button' name='edit' class='editButton btn btn-primary' value='" + id + "'>edit</button>" +
                 '<button type=\'button\' name=\'delete\' class=\'deleteButton btn btn-danger\' value=' + id + '> ' +
                 'Delete' +
                 '</button>' +
@@ -108,6 +145,7 @@ $.getJSON(url, null, function(json_result) {
         }
         $('#datatable tbody:first').remove()
         $(".deleteButton").on("click", deleteItem);
+        $(".editButton").on("click", editItem);
         console.log("Reloaded");
         console.log("Done");
 
@@ -244,6 +282,10 @@ function onSaveChanges() {
     if (isValid) {
         console.log("Valid form")
         let jObject = {}
+        let editId = $("#id").val()
+        if (editId !== "") {
+            jObject.id = editId
+        }
         jObject.first = firstNameValue
         jObject.last = lastNameValue
         jObject.email = emailValue

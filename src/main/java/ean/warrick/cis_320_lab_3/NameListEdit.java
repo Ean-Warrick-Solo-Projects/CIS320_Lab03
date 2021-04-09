@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Console;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
@@ -74,7 +75,13 @@ public class NameListEdit extends HttpServlet {
 
         // Send something back to the client. Really, we should send a JSON, but
         // we'll keep things simple.
-       PersonDAO.addPerson(formTestObject);
+        System.out.println("ID:");
+        System.out.println(formTestObject.getId());
+        if (formTestObject.getId() == 0) {
+            PersonDAO.addPerson(formTestObject);
+        } else {
+            PersonDAO.updatePerson(formTestObject);
+        }
     }
 
 
