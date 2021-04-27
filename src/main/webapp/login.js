@@ -30,7 +30,6 @@ function getLogin(speed) {
         console.log(dataFromServer);
         // Update the HTML with our result
 
-
         if (dataFromServer.substring(0, 4)  === "null") {
             console.log("There is no data found for loginId");
             $('#getSessionResult').html("You are not logged in")
@@ -38,6 +37,7 @@ function getLogin(speed) {
         } else {
             console.log("There is data found for loginId");
             $('#getSessionResult').html(dataFromServer)
+            $("#loginSection").hide();
             $("#logoutSection").show(speed)
         }
     });
@@ -56,13 +56,11 @@ function logout() {
 }
 
 // Hook the functions above to our buttons
-button = $('#getSessionJava');
-button.on("click", getLogin);
 
-button = $('#setSessionJava');
-button.on("click", login);
+loginButton = $('#loginButton');
+loginButton.on("click", login);
 
-button = $('#invalidateSession');
-button.on("click", logout);
+logoutButton = $('#logoutButton');
+logoutButton.on("click", logout);
 
-logout();
+getLogin();
